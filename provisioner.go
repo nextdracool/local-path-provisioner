@@ -192,9 +192,16 @@ func (p *LocalPathProvisioner) Provision(opts pvController.ProvisionOptions) (*v
 		return nil, fmt.Errorf("configuration error, no node was specified")
 	}
 
-	basePath, err := p.getRandomPathOnNode(node.Name)
-	if err != nil {
-		return nil, err
+	basePath := ""
+	var err error = nil
+
+	if storagePath, ok := opts.StorageClass.Parameters["path"]; ok {
+		basePath = storagePath
+	} else {
+		basePath, err = p.getRandomPathOnNode(node.Name)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	name := opts.PVName
